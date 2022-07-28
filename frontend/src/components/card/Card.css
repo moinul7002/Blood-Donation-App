@@ -1,0 +1,15 @@
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  margin: 10px;
+  background: #040c18;
+  width: 200px;
+  height: 60px;
+}
+.card:hover {
+  opacity: 0.7;
+}

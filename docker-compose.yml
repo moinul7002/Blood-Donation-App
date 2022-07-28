@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: Django_Container
+    build:
+      context: ./app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app:/app
+    environment:
+      - SECRET_KEY=bdsecretkey
+      - DEBUG=1
+      - DB_HOST=db
+      - DB_NAME=bddb
+      - DB_USER=bduser
+      - DB_PASS=shajid
+    depends_on:
+      - db
+
+  db:
+    container_name: PostgreSQL_Container
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_DB=bddb
+      - POSTGRES_USER=bduser
+      - POSTGRES_PASSWORD=shajid
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  frontend:
+    container_name: React_Container
+    build: ./frontend
+    volumes:
+      - ./frontend:/frontend
+      # One-way volume to use node_modules from inside image
+      - /frontend/node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - app
+    command: npm start
